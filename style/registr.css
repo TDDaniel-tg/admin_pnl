@@ -50,8 +50,8 @@ section span
 {
 	position: relative;
 	display: block;
-	width: calc(6.25vw - 2px);
-	height: calc(6.25vw - 2px);
+	width: calc(4vw - 2px); /* Reduced size */
+	height: calc(4vw - 2px); /* Reduced size */
 	background: #181818;
 	z-index: 2;
 	transition: 1.5s;
@@ -168,16 +168,15 @@ input[type="submit"]:active
 {
 	section span 
 	{
-		width: calc(10vw - 2px);
-		height: calc(10vw - 2px);
+		width: calc(8vw - 2px); /* Reduced size */
+		height: calc(8vw - 2px); /* Reduced size */
 	}
 }
 @media (max-width: 600px)
 {
 	section span 
 	{
-		width: calc(20vw - 2px);
-		height: calc(20vw - 2px);
+		width: calc(16vw - 2px); /* Reduced size */
+		height: calc(16vw - 2px); /* Reduced size */
 	}
-}                                         
-            
+}
