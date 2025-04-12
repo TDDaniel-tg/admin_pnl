@@ -1,13 +1,129 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    
+  <meta charset="UTF-8" />
+  <title>Интерактивная таблица с экспортом</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    .controls {
+      margin-bottom: 10px;
+    }
+    .controls label {
+      margin-right: 10px;
+    }
+  </style>
 </head>
 <body>
-    <h1>hello world</h1>
-    
+
+  <div class="controls" id="columnControls"></div>
+  <button onclick="addRow()">Добавить строку</button>
+  <button onclick="exportToExcel()">Экспорт в Excel</button>
+
+  <table id="editableTable">
+    <thead>
+      <tr>
+        <th>ФИО</th>
+        <th>Номер</th>
+        <th>Город</th>
+        <th>Весовая</th>
+        <th>Возраст</th>
+        <th>Дисциплина </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td contenteditable="true">Иван</td>
+        <td contenteditable="true">30</td>
+        <td contenteditable="true">Москва</td>
+        <td contenteditable="true">Иван</td>
+        <td contenteditable="true">30</td>
+        <td contenteditable="true">Москва</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <script>
+    const table = document.getElementById('editableTable');
+    const controls = document.getElementById('columnControls');
+
+    function initColumnControls() {
+      const headers = table.querySelectorAll('th');
+      controls.innerHTML = '';
+      headers.forEach((th, index) => {
+        const label = document.createElement('label');
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = true;
+        checkbox.dataset.index = index;
+        checkbox.onchange = toggleColumn;
+        label.appendChild(checkbox);
+        label.appendChild(document.createTextNode(' ' + th.textContent));
+        controls.appendChild(label);
+      });
+    }
+
+    function toggleColumn(e) {
+      const index = e.target.dataset.index;
+      const display = e.target.checked ? '' : 'none';
+      table.querySelectorAll('tr').forEach(row => {
+        if (row.children[index]) {
+          row.children[index].style.display = display;
+        }
+      });
+    }
+
+    function addRow() {
+      const newRow = table.insertRow();
+      const headers = table.querySelectorAll('th');
+      headers.forEach(() => {
+        const cell = newRow.insertCell();
+        cell.contentEditable = "true";
+        cell.textContent = "";
+      });
+    }
+
+    function exportToExcel() {
+      const wb = XLSX.utils.book_new();
+      const ws_data = [];
+
+      const visibleHeaders = Array.from(table.querySelectorAll('th'))
+        .filter(th => th.style.display !== 'none')
+        .map(th => th.textContent); 
+      ws_data.push(visibleHeaders);
+
+      const rows = table.querySelectorAll('tbody tr');
+      rows.forEach(row => {
+        const rowData = [];
+        Array.from(row.cells).forEach(cell => {
+          if (cell.style.display !== 'none') {
+            rowData.push(cell.textContent.trim());
+          }
+        });
+        ws_data.push(rowData);
+      });
+
+      const ws = XLSX.utils.aoa_to_sheet(ws_data);
+      XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+      XLSX.writeFile(wb, "таблица.xlsx");
+    }
+
+    // Инициализация
+    initColumnControls();
+  </script>
+
 </body>
 </html>
+    
